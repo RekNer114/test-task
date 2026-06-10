@@ -28,9 +28,6 @@ public class SecurityConfig {
 
     private final me.vmachohan.auth_api.config.JwtAuthFilter jwtAuthFilter;
 
-    @Value("${app.cors.allowed-origins}")
-    private String[] allowedOrigins;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
@@ -43,7 +40,6 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -59,7 +55,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(allowedOrigins));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -71,7 +66,6 @@ public class SecurityConfig {
 
     @Bean
     public WebClient webClient(@Value("${data-api.url}") String dataApiUrl) {
-        System.out.println("DATA API URL: " + dataApiUrl);
         return WebClient.builder()
                 .baseUrl(dataApiUrl)
                 .build();

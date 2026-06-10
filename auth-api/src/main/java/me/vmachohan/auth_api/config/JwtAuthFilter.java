@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.vmachohan.auth_api.entity.User;
 import me.vmachohan.auth_api.repository.UserRepository;
 import me.vmachohan.auth_api.service.JwtService;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -33,8 +34,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
             @Nonnull HttpServletRequest request,
-             @Nonnull HttpServletResponse response,
-             @Nonnull FilterChain filterChain) throws ServletException, IOException {
+            @Nonnull HttpServletResponse response,
+            @Nonnull FilterChain filterChain) throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -53,19 +54,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String email = jwtService.extractEmail(token);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userRepository.findUserByEmail(email).orElse(null);
-            if (user != null) {
-                var auth = new UsernamePasswordAuthenticationToken(
-                        user, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                );
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                context.setAuthentication(auth);
-                SecurityContextHolder.setContext(context);
-                contextRepository.saveContext(context, request, response);
-            }
+            userRepository.findUserByEmail(email)
+                    .ifPresent(user -> setContext(request, response, user));
+
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setContext(@NonNull HttpServletRequest request,
+                            @NonNull HttpServletResponse response,
+                            User user) {
+        var auth = new UsernamePasswordAuthenticationToken(
+                user, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
+        contextRepository.saveContext(context, request, response);
+
     }
 }

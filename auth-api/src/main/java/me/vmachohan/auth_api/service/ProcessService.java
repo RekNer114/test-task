@@ -21,8 +21,33 @@ public class ProcessService {
     private String internalToken;
 
 
-    public String process(String text, User current){
-        ProcessResponse response = client.post()
+    public String process(String text, User current) {
+        ProcessResponse response = requestTransformService(text);
+
+        if (response == null) {
+            throw new IllegalStateException("Transform service returned null");
+        }
+
+        String result = response.result();
+
+        ProcessingLog log = createProcessingLog(text, current, result);
+
+        logRepository.save(log);
+        return result;
+    }
+
+    private ProcessingLog createProcessingLog(String text, User current, String result) {
+        return ProcessingLog.builder()
+                .user(current)
+                .inputText(text)
+                .outputText(result)
+                .build();
+
+
+    }
+
+    private ProcessResponse requestTransformService(String text) {
+        return client.post()
                 .uri("/api/transform")
                 .header("X-Internal-Token", internalToken)
                 .bodyValue(new ProcessRequest(text))
@@ -30,19 +55,6 @@ public class ProcessService {
                 .bodyToMono(ProcessResponse.class)
                 .block();
 
-        If 
 
-        String result = response.result();
-
-
-        ProcessingLog log = ProcessingLog.builder()
-                .user(current)
-                .inputText(text)
-                .outputText(result)
-                .build();
-
-        logRepository.save(log);
-
-        return result;
     }
 }

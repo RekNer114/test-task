@@ -3,7 +3,6 @@ package me.vmachohan.auth_api.service;
 import lombok.RequiredArgsConstructor;
 import me.vmachohan.auth_api.entity.User;
 import me.vmachohan.auth_api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ public class AuthService {
     public void register(String email, String passwd){
         if(userRepository.findUserByEmail(email).isPresent()){
             throw new IllegalArgumentException("User with such email already exists");
-
         }
 
         User user = User.builder()
