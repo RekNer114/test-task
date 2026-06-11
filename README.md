@@ -57,10 +57,11 @@
     INTERNAL_TOKEN can be anything.
 
  3. Use <code>docker compose up</code> in the root directory to start services
-    After startup:
-        - auth-api -> http://localhost:8080
-        - data-api -> http://localhost:8081
-        - postgres -> localhost:5432
+      
+      * After startup:
+          - auth-api -> http://localhost:8080
+          - data-api -> http://localhost:8081
+          - postgres -> localhost:5432
        
  4. How to use endpoints? 
   
