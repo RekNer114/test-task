@@ -75,7 +75,7 @@
     
     (please save the received token after login)
   
-  * /api/    process (change <mark>'<your_token>'</mark> with token returned in previous response): 
+  * /api/    process (change <mark>'<your_token_from_login>'</mark> with token returned in previous response): 
   
         curl -X POST http://localhost:8080/api/process -H "Authorization: Bearer <your_token_from_login>" -H "Content-Type: application/json" -d '{"text":"hello"}'
   
