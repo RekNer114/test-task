@@ -22,9 +22,9 @@
 
 1. Package each service to <code>.jar</code>
 
-    <code>./auth-api/mvnw -f auth-api/pom.xml clean package</code>
+    <code>./mvnw -f auth-api/pom.xml clean package</code>
    
-    <code>./data-api/mvnw -f data-api/pom.xml clean package</code> 
+    <code>./mvnw -f data-api/pom.xml clean package</code> 
 
 2. Create <code>.env</code> file and configure next environment variables:
    ```
